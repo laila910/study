@@ -625,6 +625,45 @@ echo $ghjjk;
 
 set_error_handler('errorHandler',E_ALL);// Notice: Undefined variable: ghjjk in C:\xampp\htdocs\study\index.php on line 624
 
+/* Apache configuration */
+// /user/local/apache2/conf
+// if i want to access this file from xampp , conf button -> apachehttpd.conf file :) 
+
+//  /var/log/httpd
+
+// in apachehttpd.conf , there are important files :
+// #virtual hosts
+// Include conf/extra/httpd-vhosts.conf
+// you can run multiple websites on a single server at the same time , this is called virtual hosting 
+// which simple terms just means that you can run more than one website on a single machine 
+// you can have ip or name based websites meaning that you can have different ips for each website or you could have 
+// a different name for each website for the same ip 
+// you're able to apply configuration directives to specific hosts or websites by using the virtual host scope directive 
+// so if we scroll down here , this is the scope directive that you could use and apply the directives within it only to 
+// that specific 
+
+##<VirtualHost *:80>
+    ##ServerAdmin webmaster@dummy-host.example.com
+    ##DocumentRoot "/xampp/htdocs/study"
+    ##ServerName dummy-host.example.com
+    ##ServerAlias www.dummy-host.example.com
+    ##ErrorLog "logs/dummy-host.example.com-error.log"
+    ##CustomLog "logs/dummy-host.example.com-access.log" common
+##</VirtualHost>
+
+// i will open httpd-vhosts.conf and uncomment above , uncomment document root :) 
+// when i open browser and write localhost , study folder will open :) 
+// un comment serverName study.local
+// C:/Windows/System32/drivers/etc/hosts and write 127.0.0.1  study.local
+
+// after i write htaccess file , http://localhost/study/public/ that open index.php 
+// or when http://localhost/study/public/lfld that open index.php 
+
+var_dump($_SERVER['REQUEST_URI']); // string(14) "/study/public/"
+
+// note : i can put all code that i wrote to httpd-vhosts.conf  
+
+// Working with filesystem 
 
 
 
