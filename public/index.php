@@ -663,7 +663,172 @@ var_dump($_SERVER['REQUEST_URI']); // string(14) "/study/public/"
 
 // note : i can put all code that i wrote to httpd-vhosts.conf  
 
+
 // Working with filesystem 
+
+// scandir(); // list all files and directories within the given path 
+
+$dir= scandir(__DIR__);
+var_dump($dir);// array(4) { [0]=> string(1) "." [1]=> string(2) ".." [2]=> string(9) ".htaccess" [3]=> string(9) "index.php" } 
+// . refer to the current directory ,.. refer to the parent directory, .htaccess and index.php there the only files in this directory 
+var_dump(is_file($dir[2]));// bool(true) 
+var_dump(is_dir($dir[2]));//bool(false)
+//  mkdir('foo'); // to make new folder :)
+
+// rmdir('foo'); // to delete foo folder :)
+// mkdir('foo/bar');
+
+if(file_exists('foo.txt')){
+    echo filesize('foo.txt');
+    // file_put_contents('foo.txt','hello world');
+    clearstatcache();
+    echo filesize('foo.txt');
+}else{
+    echo 'file not found';
+}
+$file= fopen('foo.txt','r'); // the result of fopen('foo.txt','r) is what's called a resource 
+// resource is the datatype , is just a variable that refers to an external resource , it's a reference to that external resource 
+// which can be a stream file 
+var_dump($file);//resource(6) of type (stream)
+
+// while(($line =fgets($file)) !==false){
+// echo $line; //hello world
+// }
+
+while(($line=fgetcsv($file)) !==false){
+print_r($line);// Array ( [0] => a [1] => b [2] => c ) 
+// Array ( [0] => d [1] => e [2] => f ) 
+// Array ( [0] => g [1] => h [2] => i ) 
+}
+
+$content = file_get_contents('foo.txt');
+file_put_contents('foo.txt','laila',FILE_APPEND);
+// to delete file uses //unlink('foo.txt');
+// to copy from file to file // copy('foo.txt','bar.txt');
+fclose($file);
+
+// simple project ''file parser'' when you have multiple csv files and your goal to parse them and import it into your app 
+// extract transactions from it and store them in memory for now like an array and later of course we will store 
+// it in our database 
+
+/* Building small part of the app with procedural php  */
+// https://github.com/laila910/simpleApp_phpCourse.git
+
+
+/* Intermediate oop */
+// Better code structure , Eaiser to maintain, Modular and extendable, polymorphism Flexibility, On demand 
+// oop -> paradigm , mvc -> pattern
+// oop ---- inheritance, Encapsulation, Abstraction, Polymorphism
+
+// php docker vs xampp 
+// docker, it works on any machine , then we will ship your machine , and that's how docker was born
+// docker allows you work on multiple projects at the same time even if the php versions are different it basically lets you 
+// bundle your development environment in isolated containers that are portal this is hard to achieve with xampp 
+// project1 -> PHP8 , Nginx , Mysql 8 , Redis 6.2 
+// project2 -> PHP7.4 , Apache , mysql 5.6 
+// project3 -> PHP7.2 , Apache , mysql 5.6
+// .... 
+
+// in container -> container contain php8,nginx, apache, redis 6.2 
+
+// docker-> webserver(Apache/nginx) + php + redis + mysql 
+
+// docker file is a text file where you write instructions on how to build a docker image and a docker image is a read only 
+// executable package that includes everything needed to run your app like source code dependencies , environment
+ // variables configurations and so on 
+
+// docker image and container are pretty much the same , the difference is that the images are read-only 
+// and they can exist without containers to run they need an image in away you can think of images like templates you cannot start 
+//or run these images but instead you can use them as a base or a template to build your container 
+
+// apache by default come with php mod , server API -> Apache 2.0 handler that mean apache come with php mod :) 
+
+/* classes and objects */
+// Method Chaining 
+
+// method that doesn't return anything 
+// ex:
+class Transaction{
+    private float $amount;
+    public string $description;
+    public function __construct(float $amount,string $description){
+        $this->amount=$amount;
+        $this->description=$description;
+
+    }
+    public function addTax(float $rate):Transaction
+    {
+        $this->amount += $this->amount * $rate/100;
+        return $this;
+
+    }
+    public function applyDiscount(float $rate):Transaction
+    {
+        $this->amount -= $this->amount *$rate/100;
+        return $this;
+    }
+}
+$transaction =new Transaction(100,'Transaction 1');
+$transaction->addTax(8)->applyDiscount(10);//method chaining :) 
+
+// php std class used to create generic objects and also some functions return instances of std class 
+
+$str='{"a":1,"b":2,"c":3}';
+$arr= json_decode($str);
+var_dump($arr);// object(stdClass)#4 (3) { ["a"]=> int(1) ["b"]=> int(2) ["c"]=> int(3) }
+// $arr=json_decode($arr,true);// return associative array
+
+$arrd=[1,2,3];
+var_dump((object) $arrd); //convert array to object 
+//object(stdClass)#5 (3) { ["0"]=> int(1) ["1"]=> int(2) ["2"]=> int(3) }
+
+var_dump((object) 1);//object(stdClass)#5 (1) { ["scalar"]=> int(1) } 
+// let's cast integer to object
+
+$obj = (object) false;
+var_dump((object) false);// object(stdClass)#5 (1) { ["scalar"]=> bool(false) }
+
+ 
+// constructor property promotion & NullSafe
+// Namespaces as virtual directory structures for your classes 
+// we can define namespaces using the namespace keyoword on the top of the page 
+
+/* Autoloading */
+// autoloading php standards and composer 
+// here , we will cover how to use autoloader without composer 
+
+spl_autoload_register(function($class){
+var_dump($class);
+});// autoloader didn't run because we have the require statements and php knows how to load these classes 
+// and therefore it doesn't need to run our autoloader 
+// so what autoloading does is that automatically loads your classes interfaces and traits that are not already 
+// included or in other words are undefined 
+
+// when you try to access a class php will check if that class exists if it's not exist before throwing an errors it looks 
+// for any registered autoloader functions and runs them one by one 
+// when you register oral loaders they go into queue and are executed one by one whenever class is not found we can see 
+// fatal error 
+
+spl_autoload_register(function($class){
+var_dump('autoloader 1');
+});
+spl_autoload_register(function($class){
+    var_dump('autoloader 2');
+});//prepend:true after } if i want to execute this first :) 
+lcfirst('FFF');//make first letter lower case 
+str_repeat('\\','/',$vsdsf);// $vsdsf is path :) 
+
+//psr which stands for php standard recommendations which is maintained by php framework interoperability group or in short 
+// php fig this group was formed by several php framework founders and developers 
+
+// const ----self 
+// static --- reserve the value after change 
+
+
+
+
+
+
 
 
 
